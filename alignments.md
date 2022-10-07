@@ -18,4 +18,8 @@ Por exemplo main-group-20-refat-03
 
 "fix: Corrigindo o bug que o botão não faz o redirect pra /result"
 
+## Caso esteja fazendo um commit intermediário ao final do dia ou para uma pausa:
+
+"pause: terminando os trabalhos por hoje, continuo amanhã"
+
 
