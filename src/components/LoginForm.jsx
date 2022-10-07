@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Settings from '../pages/Settings';
 
@@ -23,6 +24,7 @@ export default class LoginForm extends Component {
   };
 
   render() {
+    const { getToken } = this.props;
     const { name, email, isDisabled, settings } = this.state;
     if (settings === true) {
       return <Settings />;
@@ -48,6 +50,7 @@ export default class LoginForm extends Component {
             type="button"
             data-testid="btn-play"
             disabled={ isDisabled }
+            onClick={ getToken }
           >
             Play
           </button>
@@ -63,3 +66,7 @@ export default class LoginForm extends Component {
     );
   }
 }
+
+LoginForm.propTypes = {
+  getToken: PropTypes.func,
+}.isRequired;
