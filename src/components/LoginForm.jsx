@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
+import Settings from '../pages/Settings';
 
 export default class LoginForm extends Component {
   state = {
     name: '',
     email: '',
     isDisabled: true,
+    settings: false,
+  };
+
+  changeToSettings = () => {
+    this.setState({ settings: true });
   };
 
   validateLogin = () => {
@@ -17,7 +23,10 @@ export default class LoginForm extends Component {
   };
 
   render() {
-    const { name, email, isDisabled } = this.state;
+    const { name, email, isDisabled, settings } = this.state;
+    if (settings === true) {
+      return <Settings />;
+    }
     return (
       <div>
         <form>
@@ -41,6 +50,13 @@ export default class LoginForm extends Component {
             disabled={ isDisabled }
           >
             Play
+          </button>
+          <button
+            type="button"
+            data-testid="btn-settings"
+            onClick={ () => this.changeToSettings() }
+          >
+            Configurações
           </button>
         </form>
       </div>
