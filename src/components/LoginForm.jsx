@@ -1,16 +1,29 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import Settings from '../pages/Settings';
+import SUBMIT_USER_PROFILE from '../redux/actions';
 
-export default class LoginForm extends Component {
+class LoginForm extends Component {
   state = {
     name: '',
     email: '',
     isDisabled: true,
     settings: false,
+    isGame: false,
   };
 
   changeToSettings = () => {
     this.setState({ settings: true });
+  };
+
+  changeToPlay = () => {
+    const { dispatch } = this.props;
+    const { email, name } = this.state;
+    const action = { type: SUBMIT_USER_PROFILE, payload: { name, gravatarEmail: email } };
+    this.setState({ isGame: true });
+    dispatch(action);
   };
 
   validateLogin = () => {
@@ -23,10 +36,13 @@ export default class LoginForm extends Component {
   };
 
   render() {
-    const { name, email, isDisabled, settings } = this.state;
-    if (settings === true) {
+    const { name, email, isDisabled, settings, isGame } = this.state;
+    if (settings === true && isGame === false) {
       return <Settings />;
+    } if (settings === false && isGame === true) {
+      return <Redirect to="/game" />;
     }
+
     return (
       <div>
         <form>
@@ -48,6 +64,7 @@ export default class LoginForm extends Component {
             type="button"
             data-testid="btn-play"
             disabled={ isDisabled }
+            onClick={ () => this.changeToPlay() }
           >
             Play
           </button>
@@ -63,3 +80,9 @@ export default class LoginForm extends Component {
     );
   }
 }
+
+LoginForm.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+};
+
+export default connect()(LoginForm);
