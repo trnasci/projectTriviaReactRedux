@@ -14,30 +14,30 @@ export default class Game extends Component {
 
   requestGame = async () => {
     const token = localStorage.getItem('token');
-    try {
-      const result = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
-      const data = await result.json();
-      this.setState({ data: data.results });
-    } catch (e) {
+    const min = 3;
+    const result = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
+    const data = await result.json();
+    if (data.response_code === min) {
       localStorage.setItem('token', '');
+      const { history } = this.props;
+      history.push('/');
     }
+    this.setState({ data: data.results });
   };
 
   shuffle = (array) => {
     let currentIndex = array.length; let
       randomIndex;
-    // While there remain elements to shuffle.
     while (currentIndex !== 0) {
-      // Pick a remaining element.
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
 
-      // And swap it with the current element.
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
 
     return array;
+    // Referência: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   };
 
   render() {
@@ -50,7 +50,7 @@ export default class Game extends Component {
             <div>
               <h2 data-testid="question-category">{data[question].category}</h2>
               <h1 data-testid="question-text">{data[question].question}</h1>
-              <ul>
+              <ul data-testid="answer-options">
                 {
                   this.shuffle([
                     ...data[question].incorrect_answers, data[question].correct_answer]

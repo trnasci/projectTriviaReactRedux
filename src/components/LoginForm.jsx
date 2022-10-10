@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
 import requestToken from '../api';
 import Settings from '../pages/Settings';
 import SUBMIT_USER_PROFILE from '../redux/actions';
