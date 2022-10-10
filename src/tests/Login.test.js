@@ -2,6 +2,7 @@ import React from "react";
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from '../pages/Login';
+import App from '../App';
 import renderWithRouterAndRedux from './helpers/renderWithRouterAndRedux';
 
 describe('Testa a página Login', () => {
@@ -33,7 +34,7 @@ describe('Testa a página Login', () => {
   });
 
    test('Verifica o history.push', async () => {
-    const { history } = renderWithRouterAndRedux(<Login />);
+    const { history } = renderWithRouterAndRedux(<App />);
 
     const textInput = screen.getByTestId('input-player-name');
     userEvent.type(textInput, 'Rafael');
@@ -42,10 +43,11 @@ describe('Testa a página Login', () => {
     userEvent.type(email, 'rafa@gmail.com');
 
     const buttonPlay = screen.getByTestId('btn-play');
+    expect(buttonPlay).not.toBeDisabled()
     userEvent.click(buttonPlay);
-    const game = await screen.findByText(/game/i)
-
+    const game = await screen.findByText(/game/i, {}, {timeout: 2000})
+    console.log(game);
     expect(game).toBeInTheDocument();
-    expect(history.location.pathname).toBe('/game');
+      expect(history.location.pathname).toBe('/game');
   })
 })
