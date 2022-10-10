@@ -6,6 +6,7 @@ export default class Game extends Component {
   state = {
     data: [],
     question: 0,
+    colors: false,
   };
 
   componentDidMount() {
@@ -25,6 +26,11 @@ export default class Game extends Component {
     this.setState({ data: data.results });
   };
 
+  mudarCor = ({ target }) => {
+    console.log(target);
+    this.setState({ colors: true });
+  };
+
   shuffle = (array) => {
     let currentIndex = array.length; let
       randomIndex;
@@ -41,7 +47,7 @@ export default class Game extends Component {
   };
 
   render() {
-    const { data, question } = this.state;
+    const { data, question, colors } = this.state;
     return (
       <div>
         <Header />
@@ -62,8 +68,16 @@ export default class Game extends Component {
                             ? 'correct' : 'wrong'}-answer${i === a.length - 1
                             ? '' : `-${i}`}`
                         }
+                        className={ colors
+                          ? (`${i === a.length - 1
+                            ? 'correct' : 'wrong'}-answer`) : '' }
                       >
-                        <button type="button">{cadaResposta}</button>
+                        <button
+                          type="button"
+                          onClick={ this.mudarCor }
+                        >
+                          {cadaResposta}
+                        </button>
                       </li>)))
                 }
               </ul>
