@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import Settings from '../pages/Settings';
@@ -89,4 +88,3 @@ LoginForm.propTypes = {
 }.isRequired;
 
 export default connect()(LoginForm);
-
