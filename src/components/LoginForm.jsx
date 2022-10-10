@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -19,8 +20,9 @@ class LoginForm extends Component {
   };
 
   changeToPlay = () => {
-    const { dispatch } = this.props;
+    const { dispatch, getToken } = this.props;
     const { email, name } = this.state;
+    getToken();
     const action = { type: SUBMIT_USER_PROFILE, payload: { name, gravatarEmail: email } };
     this.setState({ isGame: true });
     dispatch(action);
@@ -82,7 +84,9 @@ class LoginForm extends Component {
 }
 
 LoginForm.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-};
+  getToken: PropTypes.func,
+  dispatch: PropTypes.func,
+}.isRequired;
 
 export default connect()(LoginForm);
+

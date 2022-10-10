@@ -8,10 +8,13 @@ export default class App extends Component {
   render() {
     return (
       <div className="App">
-        <Switch>
-          <Route exact path="/" component={ Login } />
-          <Route path="/game" component={ Game } />
-        </Switch>
+        <header className="App-header">
+          <img src={ logo } className="App-logo" alt="logo" />
+          <Switch>
+            <Route exact path="/" component={ Login } />
+            <Route path="/game" component={ Game } />
+          </Switch>
+        </header>
       </div>
     );
   }
