@@ -37,9 +37,9 @@ class LoginForm extends Component {
 
   render() {
     const { name, email, isDisabled, settings, isGame } = this.state;
-    if (settings === true && isGame === false) {
+    if (settings === true) {
       return <Settings />;
-    } if (settings === false && isGame === true) {
+    } if (isGame === true) {
       return <Redirect to="/game" />;
     }
 
