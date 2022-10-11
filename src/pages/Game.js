@@ -16,7 +16,6 @@ class Game extends Component {
     timedOut: false,
     btnNext: true,
     difficulty: '',
-    score: 0,
   };
 
   componentDidMount() {
@@ -75,10 +74,10 @@ class Game extends Component {
     if (target.name === 'correct') {
       const score = TEN + (time * diffValue);
       dispatchScore(score);
-      this.setState({ score, timedOut: true });
+      this.setState({ timedOut: true });
       clearInterval(this.timer);
     } else {
-      this.setState({ score: 0, timedOut: true });
+      this.setState({ timedOut: true });
       clearInterval(this.timer);
     }
   };
@@ -142,7 +141,6 @@ class Game extends Component {
       wrongs,
       time,
       btnNext,
-      score,
       timedOut } = this.state;
     return (
       <div>
