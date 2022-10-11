@@ -71,12 +71,13 @@ class Game extends Component {
       break;
     }
     if (target.name === 'correct') {
-      this.setState({ score: TEN + (time * diffValue), timedOut: true }, () => {
-        const { score } = this.state;
-        dispatchScore(score);
-      });
+      const score = TEN + (time * diffValue);
+      dispatchScore(score);
+      this.setState({ score, timedOut: true });
+      clearInterval(this.timer);
     } else {
       this.setState({ score: 0, timedOut: true });
+      clearInterval(this.timer);
     }
   };
 
