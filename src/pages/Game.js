@@ -11,6 +11,7 @@ export default class Game extends Component {
     correctAnswer: '',
     answers: [],
     wrongs: [],
+    timedOut: false,
   };
 
   componentDidMount() {
@@ -52,7 +53,10 @@ export default class Game extends Component {
     this.timer = setInterval(() => {
       this.setState(({ time }) => ({ time: time - 1 }), () => {
         const { time } = this.state;
-        if (time === 0) clearInterval(this.timer);
+        if (time === 0) {
+          this.setState({ timedOut: true });
+          clearInterval(this.timer);
+        }
       });
     }, SECOND);
   };
@@ -71,7 +75,15 @@ export default class Game extends Component {
   };
 
   render() {
-    const { data, question, colors, answers, correctAnswer, wrongs, time } = this.state;
+    const {
+      data,
+      question,
+      colors,
+      answers,
+      correctAnswer,
+      wrongs,
+      time,
+      timedOut } = this.state;
     if (correctAnswer) console.log(correctAnswer);
     return (
       <div>
@@ -81,10 +93,10 @@ export default class Game extends Component {
             <div>
               <h2 data-testid="question-category">{data[question].category}</h2>
               <h1 data-testid="question-text">{data[question].question}</h1>
-              <ul data-testid="answer-options">
+              <div data-testid="answer-options">
                 {
                   answers.map((e) => (
-                    <li
+                    <button
                       key={ e }
                       data-testid={
                         e.match(correctAnswer)
@@ -93,33 +105,15 @@ export default class Game extends Component {
                       className={ colors
                         ? (`${e.match(correctAnswer)
                           ? 'correct' : 'wrong'}-answer`) : '' }
+                      type="button"
+                      disabled={ timedOut }
+                      onClick={ this.mudarCor }
                     >
-                      <button type="button" onClick={ this.mudarCor }>{e}</button>
-                    </li>
+                      {e}
+                    </button>
                   ))
-                  // this.shuffle([
-                  //   ...data[question].incorrect_answers, data[question].correct_answer]
-                  //   .map((cadaResposta, i, a) => (
-                  //     <li
-                  //       key={ cadaResposta }
-                  //       data-testid={
-                  //         `${i === a.length - 1
-                  //           ? 'correct' : 'wrong'}-answer${i === a.length - 1
-                  //           ? '' : `-${i}`}`
-                  //       }
-                  //       className={ colors
-                  //         ? (`${i === a.length - 1
-                  //           ? 'correct' : 'wrong'}-answer`) : '' }
-                  //     >
-                  //       <button
-                  //         type="button"
-                  //         onClick={ this.mudarCor }
-                  //       >
-                  //         {cadaResposta}
-                  //       </button>
-                  //     </li>)))
                 }
-              </ul>
+              </div>
               <p>{time}</p>
             </div>)
         }
