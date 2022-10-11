@@ -12,6 +12,7 @@ export default class Game extends Component {
     answers: [],
     wrongs: [],
     timedOut: false,
+    btnNext: true,
   };
 
   componentDidMount() {
@@ -45,7 +46,8 @@ export default class Game extends Component {
   };
 
   mudarCor = () => {
-    this.setState({ colors: true });
+    this.setState({ colors: true, btnNext: false });
+    clearInterval(this.timer);
   };
 
   gameTimer = () => {
@@ -54,7 +56,7 @@ export default class Game extends Component {
       this.setState(({ time }) => ({ time: time - 1 }), () => {
         const { time } = this.state;
         if (time === 0) {
-          this.setState({ timedOut: true });
+          this.setState({ timedOut: true, btnNext: false, colors: true });
           clearInterval(this.timer);
         }
       });
@@ -74,6 +76,29 @@ export default class Game extends Component {
     // Referência: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   };
 
+  // botão next
+  handleClickNext = () => {
+    this.setState((prevstate) => ({ question: prevstate.question + 1,
+
+    }), () => {
+      const { question, data, answers, correctAnswer } = this.state;
+      const array = this.shuffle([
+        ...data[question].incorrect_answers, data[question].correct_answer]);
+      const wrongs = answers
+        .filter((e) => !e.match(correctAnswer));
+      this.setState({
+        correctAnswer: data[question].correct_answer,
+        answers: array,
+        wrongs,
+        colors: false,
+        btnNext: true,
+        time: 30,
+        timedOut: false,
+      });
+    });
+    this.gameTimer();
+  };
+
   render() {
     const {
       data,
@@ -83,6 +108,7 @@ export default class Game extends Component {
       correctAnswer,
       wrongs,
       time,
+      btnNext,
       timedOut } = this.state;
     if (correctAnswer) console.log(correctAnswer);
     return (
@@ -115,6 +141,16 @@ export default class Game extends Component {
                 }
               </div>
               <p>{time}</p>
+              { !btnNext && (
+                <button
+                  type="button"
+                  data-testid="btn-next"
+                  // hidden={ btnNext }
+                  onClick={ this.handleClickNext }
+                >
+                  Next
+                </button>
+              )}
             </div>)
         }
       </div>
