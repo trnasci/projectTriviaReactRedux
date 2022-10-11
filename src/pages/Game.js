@@ -7,28 +7,54 @@ export default class Game extends Component {
     data: [],
     question: 0,
     colors: false,
+    time: 30,
+    correctAnswer: '',
+    answers: [],
+    wrongs: [],
   };
 
   componentDidMount() {
     this.requestGame();
+    this.gameTimer();
   }
 
   requestGame = async () => {
     const token = localStorage.getItem('token');
     const min = 3;
     const result = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
-    const data = await result.json();
-    if (data.response_code === min) {
+    const triviaData = await result.json();
+    if (triviaData.response_code === min) {
       localStorage.setItem('token', '');
       const { history } = this.props;
       history.push('/');
     }
-    this.setState({ data: data.results });
+    this.setState({ data: triviaData.results }, () => {
+      const { question, data } = this.state;
+      this.setState({
+        correctAnswer: data[question].correct_answer,
+        answers: this.shuffle([
+          ...data[question].incorrect_answers, data[question].correct_answer]),
+      }, () => {
+        const { answers, correctAnswer } = this.state;
+        const wrongs = answers
+          .filter((e) => !e.match(correctAnswer));
+        this.setState({ wrongs });
+      });
+    });
   };
 
-  mudarCor = ({ target }) => {
-    console.log(target);
+  mudarCor = () => {
     this.setState({ colors: true });
+  };
+
+  gameTimer = () => {
+    const SECOND = 1000;
+    this.timer = setInterval(() => {
+      this.setState(({ time }) => ({ time: time - 1 }), () => {
+        const { time } = this.state;
+        if (time === 0) clearInterval(this.timer);
+      });
+    }, SECOND);
   };
 
   shuffle = (array) => {
@@ -37,17 +63,16 @@ export default class Game extends Component {
     while (currentIndex !== 0) {
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
-
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
-
     return array;
     // Referência: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   };
 
   render() {
-    const { data, question, colors } = this.state;
+    const { data, question, colors, answers, correctAnswer, wrongs, time } = this.state;
+    if (correctAnswer) console.log(correctAnswer);
     return (
       <div>
         <Header />
@@ -58,29 +83,44 @@ export default class Game extends Component {
               <h1 data-testid="question-text">{data[question].question}</h1>
               <ul data-testid="answer-options">
                 {
-                  this.shuffle([
-                    ...data[question].incorrect_answers, data[question].correct_answer]
-                    .map((cadaResposta, i, a) => (
-                      <li
-                        key={ cadaResposta }
-                        data-testid={
-                          `${i === a.length - 1
-                            ? 'correct' : 'wrong'}-answer${i === a.length - 1
-                            ? '' : `-${i}`}`
-                        }
-                        className={ colors
-                          ? (`${i === a.length - 1
-                            ? 'correct' : 'wrong'}-answer`) : '' }
-                      >
-                        <button
-                          type="button"
-                          onClick={ this.mudarCor }
-                        >
-                          {cadaResposta}
-                        </button>
-                      </li>)))
+                  answers.map((e) => (
+                    <li
+                      key={ e }
+                      data-testid={
+                        e.match(correctAnswer)
+                          ? 'correct-answer' : `wrong-answer-${wrongs.indexOf(e)}`
+                      }
+                      className={ colors
+                        ? (`${e.match(correctAnswer)
+                          ? 'correct' : 'wrong'}-answer`) : '' }
+                    >
+                      <button type="button" onClick={ this.mudarCor }>{e}</button>
+                    </li>
+                  ))
+                  // this.shuffle([
+                  //   ...data[question].incorrect_answers, data[question].correct_answer]
+                  //   .map((cadaResposta, i, a) => (
+                  //     <li
+                  //       key={ cadaResposta }
+                  //       data-testid={
+                  //         `${i === a.length - 1
+                  //           ? 'correct' : 'wrong'}-answer${i === a.length - 1
+                  //           ? '' : `-${i}`}`
+                  //       }
+                  //       className={ colors
+                  //         ? (`${i === a.length - 1
+                  //           ? 'correct' : 'wrong'}-answer`) : '' }
+                  //     >
+                  //       <button
+                  //         type="button"
+                  //         onClick={ this.mudarCor }
+                  //       >
+                  //         {cadaResposta}
+                  //       </button>
+                  //     </li>)))
                 }
               </ul>
+              <p>{time}</p>
             </div>)
         }
       </div>
