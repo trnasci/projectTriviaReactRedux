@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import requestToken from '../api';
 import Settings from '../pages/Settings';
-import SUBMIT_USER_PROFILE from '../redux/actions';
+import { SUBMIT_USER_PROFILE } from '../redux/actions';
 
 class LoginForm extends Component {
   state = {

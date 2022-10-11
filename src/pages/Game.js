@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Header from '../components/Header';
+import { answerScore } from '../redux/actions';
 
-export default class Game extends Component {
+class Game extends Component {
   state = {
     data: [],
     question: 0,
@@ -13,6 +15,8 @@ export default class Game extends Component {
     wrongs: [],
     timedOut: false,
     btnNext: true,
+    difficulty: '',
+    score: 0,
   };
 
   componentDidMount() {
@@ -36,6 +40,7 @@ export default class Game extends Component {
         correctAnswer: data[question].correct_answer,
         answers: this.shuffle([
           ...data[question].incorrect_answers, data[question].correct_answer]),
+        difficulty: data[question].difficulty,
       }, () => {
         const { answers, correctAnswer } = this.state;
         const wrongs = answers
@@ -45,9 +50,37 @@ export default class Game extends Component {
     });
   };
 
-  mudarCor = () => {
-    this.setState({ colors: true, btnNext: false });
+  mudarCor = ({ target }) => {
+    this.setState({ colors: true, btnNext: false }, this.setScore(target));
     clearInterval(this.timer);
+  };
+
+  setScore = (target) => {
+    const { difficulty, time } = this.state;
+    const { dispatchScore } = this.props;
+    const TEN = 10;
+    const THREE = 3;
+    let diffValue;
+    switch (difficulty) {
+    case 'easy':
+      diffValue = 1;
+      break;
+    case 'medium':
+      diffValue = 2;
+      break;
+    default:
+      diffValue = THREE;
+      break;
+    }
+    if (target.name === 'correct') {
+      const score = TEN + (time * diffValue);
+      dispatchScore(score);
+      this.setState({ score, timedOut: true });
+      clearInterval(this.timer);
+    } else {
+      this.setState({ score: 0, timedOut: true });
+      clearInterval(this.timer);
+    }
   };
 
   gameTimer = () => {
@@ -109,8 +142,8 @@ export default class Game extends Component {
       wrongs,
       time,
       btnNext,
+      score,
       timedOut } = this.state;
-    if (correctAnswer) console.log(correctAnswer);
     return (
       <div>
         <Header />
@@ -134,6 +167,7 @@ export default class Game extends Component {
                       type="button"
                       disabled={ timedOut }
                       onClick={ this.mudarCor }
+                      name={ e.match(correctAnswer) ? 'correct' : 'wrong' }
                     >
                       {e}
                     </button>
@@ -163,3 +197,9 @@ Game.propTypes = {
     push: PropTypes.func,
   }),
 }.isRequired;
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatchScore: (state) => dispatch(answerScore(state)),
+});
+
+export default connect(null, mapDispatchToProps)(Game);
