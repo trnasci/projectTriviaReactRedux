@@ -45,7 +45,7 @@ describe('Testa a página Login', () => {
     const buttonPlay = screen.getByTestId('btn-play');
     expect(buttonPlay).not.toBeDisabled()
     userEvent.click(buttonPlay);
-    const game = await screen.findByText(/game/i, {}, {timeout: 2000})
+    const game = await screen.findByTestId('header-score')
     console.log(game);
     expect(game).toBeInTheDocument();
       expect(history.location.pathname).toBe('/game');
